@@ -1,8 +1,11 @@
 import {
-  Container,
   CssBaseline,
   styled
 } from "@mui/material";
+import {GoogleMap, useLoadScript, Marker} from "@react-google-maps/api"
+import {useMemo} from "react";
+import "./globals.css"
+import business from "./business.json"
 
 const BackgroundPage = styled("div")(() => ({
   backgroundImage: `url(https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg)`,
@@ -13,12 +16,31 @@ const BackgroundPage = styled("div")(() => ({
   minHeight: `calc(100vh - 70px)`
 }));
 
+const CustomGoogleMap = styled(GoogleMap)(({ theme }) => ({
+}));
+
+const Map = () => {
+  const center = useMemo(() => ({lat: 53.55, lng: -113.5}), [])
+  console.log(business.data)
+
+  return <CustomGoogleMap zoom={10} center={center} mapContainerClassName="map-container">
+    {business.data.map((business) => {
+      return <Marker position={{lat: business.latitude, lng:business.longitude}}/>
+    })}
+  </CustomGoogleMap>
+}
+
 export default function Home() {
+  const {isLoaded} = useLoadScript({
+    googleMapsApiKey: "AIzaSyAiPsqAbKB6g5PmKUA7YNzLRWoZ_dY-3-A"
+  })
+
+  if (!isLoaded) return <div>Loading...</div>
+
   return (
     <BackgroundPage>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-      </Container>
+      <CssBaseline/>
+      <Map/>
     </BackgroundPage>
-    )
+  )
 }
