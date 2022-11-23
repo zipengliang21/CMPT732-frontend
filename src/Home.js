@@ -32,7 +32,7 @@ const Map = () => {
 
 export default function Home() {
   const {isLoaded} = useLoadScript({
-    googleMapsApiKey: "AIzaSyAiPsqAbKB6g5PmKUA7YNzLRWoZ_dY-3-A"
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
   })
 
   if (!isLoaded) return <div>Loading...</div>
