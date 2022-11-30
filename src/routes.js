@@ -1,6 +1,8 @@
 import { useRoutes } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./Home";
+import NLP from "./NLP";
+import RecommendedLocation from "./RecommendedLocation";
 
 export default function Router() {
   return useRoutes([
@@ -11,6 +13,8 @@ export default function Router() {
       ),
       children: [
         { path: "/", element: <Home /> },
+        { path: "nlp", element: <NLP /> },
+        { path: "recommended_location", element: <RecommendedLocation /> },
       ]
     },
   ]);

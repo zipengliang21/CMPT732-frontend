@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, styled } from "@mui/material";
+import { AppBar, Toolbar, Typography, styled, Link } from "@mui/material";
 
 import { Outlet } from "react-router-dom";
 
@@ -14,7 +14,7 @@ const ToolBarStyle = styled(Toolbar)(() => ({
   justifyContent: "space-between"
 }));
 
-const TitleStyle = styled(Typography)(({ theme }) => ({
+const TitleStyle = styled(Link)(({ theme }) => ({
   color: theme.palette.primary.dark,
   margin: theme.spacing(0, 3)
 }));
@@ -29,16 +29,19 @@ export default function Header() {
       <AppBarStyle position="relative" elevation={1}>
         <ToolBarStyle>
           <div>
-            <TitleStyle variant="h4" aria-label="title">
-              Yelp Recommender System
+            <TitleStyle href="/" variant="h4" aria-label="title" underline="none">
+              Yelp
             </TitleStyle>
           </div>
           <MenuStyle>
-            <TitleStyle variant="h6">
+            <TitleStyle href="/" variant="h6" underline="none">
               Home
             </TitleStyle>
-            <TitleStyle variant="h6">
-              Recommender System
+            <TitleStyle href="nlp" variant="h6" underline="none">
+              NLP
+            </TitleStyle>
+            <TitleStyle href="recommended_location" variant="h6" underline="none">
+              Recommended Location
             </TitleStyle>
           </MenuStyle>
         </ToolBarStyle>
