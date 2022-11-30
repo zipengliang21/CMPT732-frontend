@@ -19,37 +19,39 @@ ChartJS.register(
   Legend
 );
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
+export default function BarChart(pros) {
+  const barChartData= pros.BarChartData
+  console.log(barChartData)
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: barChartData.chartTitle,
+        font: {
+          size: 20
+        }
+      },
     },
-    title: {
-      display: true,
-      text: 'Star Rating Count',
-      font: {
-        size: 20
-      }
-    },
-  },
-};
+  };
 
-const labels = ["1 star", "2 stars", "3 stars", "4 stars", "5 stars"];
+  const labels = barChartData.xValues
 
-export const values = [50, 120, 300, 580, 400]
+  const values = barChartData.yValues
 
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: "# of business",
-      data: labels.map((value, index, array) => values[index]),
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: barChartData.dataSetLabels[0],
+        data: labels.map((value, index, array) => values[index]),
+        backgroundColor: barChartData.backgroundColor[0],
+      },
+    ],
+  };
 
-export default function BarChart() {
   return <Bar options={options} data={data}/>;
 }

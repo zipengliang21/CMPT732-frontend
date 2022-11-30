@@ -7,6 +7,7 @@ import React from "react";
 import Bug from "./components/Bug";
 import Github from "./components/Github";
 import BarChart from "./components/BarChart";
+import * as BarChartData from "./util/BarChartData";
 
 const BackgroundPage = styled("div")(() => ({
   backgroundImage: `url(https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg)`,
@@ -59,6 +60,22 @@ const Wrapper = styled("div")(({theme}) => ({
 }));
 
 export default function Home() {
+  const BarChartData1 = {
+    chartTitle: BarChartData.chartTitle[0],
+    xValues: BarChartData.xValues[0],
+    yValues: BarChartData.yValues[0],
+    dataSetLabels: BarChartData.dataSetLabels[0],
+    backgroundColor: BarChartData.backgroundColor[0]
+  }
+
+  const BarChartData2 = {
+    chartTitle: BarChartData.chartTitle[1],
+    xValues: BarChartData.xValues[1],
+    yValues: BarChartData.yValues[1],
+    dataSetLabels: BarChartData.dataSetLabels[1],
+    backgroundColor: BarChartData.backgroundColor[1]
+  }
+
   return (
     <BackgroundPage>
       <Paper>
@@ -90,10 +107,10 @@ export default function Home() {
       </Paper>
       <Wrapper>
         <BarChartWrapper>
-          <BarChart/>
+          <BarChart BarChartData={BarChartData1}/>
         </BarChartWrapper>
         <BarChartWrapper>
-          <BarChart/>
+          <BarChart BarChartData={BarChartData2}/>
         </BarChartWrapper>
       </Wrapper>
 
