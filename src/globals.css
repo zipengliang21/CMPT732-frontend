@@ -1,4 +1,8 @@
-.map-container {
+.leaflet-container{
   width: 60vw;
   height: 80vh;
+}
+
+.markercluster-map {
+  height: 90vh;
 }

@@ -1,8 +1,9 @@
 import {
   styled, Typography
 } from "@mui/material";
-import {GoogleMap, useLoadScript, Marker} from "@react-google-maps/api"
-import React, {useMemo, useState} from "react";
+import {MapContainer, TileLayer, Marker, Popup, LayersControl, Circle, LayerGroup} from "react-leaflet"
+import L from "leaflet"
+import React, {useMemo, useRef, useState} from "react";
 import "./globals.css"
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
@@ -10,6 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import useMapData from "./hooks/useMapData";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 
 const BackgroundPage = styled("div")(() => ({
   backgroundImage: `url(https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg)`,
@@ -34,10 +36,6 @@ const CustomTable = styled("div")(({theme}) => ({
   color: theme.palette.info.main,
 }));
 
-const CustomGoogleMap = styled("div")(({theme}) => ({
-  margin: theme.spacing(6, 2),
-}));
-
 const DropdownWrapper = styled("div")(({theme}) => ({
   display: "flex",
   width: "100%",
@@ -56,33 +54,65 @@ const onReset = () => {
 const starRating = [1, 2, 3, 4, 5]
 
 export default function RecommendedLocation() {
-  const {isLoaded} = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
-  })
-
   const [category, setCategory] = useState("");
-  const { businessData, starLevel, setStarLevel }  = useMapData()
+  const {businessData, starLevel, setStarLevel} = useMapData();
+  const mapRef = useRef()
+
+  const markerIcon = new L.Icon({
+    iconUrl: require("./resources/images/marker.png"),
+    iconSize: [25, 35],
+    iconAnchor: [20, 40],
+  })
 
   const onApplyFilter = async e => {
     e.preventDefault();
-
   }
 
-  if (!isLoaded) return <div>Loading...</div>
   const Map = () => {
-    const center = useMemo(() => ({lat: 53.55, lng: -113.5}), [])
+    const position = useMemo(() => ({lat: 53.55, lng: -113.5}), [])
+    return (
 
-    return <CustomGoogleMap>
-      <GoogleMap zoom={12} center={center} mapContainerClassName="map-container">
+      <MapContainer
+        doubleClickZoom={false}
+        center={position}
+        zoom={11}
+        maxZoom={18}
+        ref={mapRef}>
+
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+        />
+
+        <MarkerClusterGroup>
+          {businessData.map((business) => {
+            return <Marker
+                position={{lat: business.latitude, lng: business.longitude}}
+                icon={markerIcon}>
+                <Popup>
+                  <b>Name: {business.name}</b> <br/>
+                  <b>Star: {business.stars}</b> <br/>
+                  <b>Review count: {business.review_count}</b>
+                </Popup>
+              </Marker>
+          })}
+        </MarkerClusterGroup>
         {businessData.map((business) => {
-          return <Marker position={{lat: business.latitude, lng: business.longitude}}/>
+          return <LayerGroup>
+              <Circle
+                center={[business.latitude, business.longitude]}
+                pathOptions={{ color: 'blue', fillColor: 'blue' }}
+                radius={500}
+              />
+            </LayerGroup>
         })}
-      </GoogleMap>
-    </CustomGoogleMap>
+      </MapContainer>
+
+    );
   }
 
-  const handleStarLevelChange= (e) => {
-    setStarLevel(e.target.value)
+  const handleStarLevelChange = (e) => {
+    setStarLevel(e.target.value);
   }
 
   return (
@@ -133,7 +163,7 @@ export default function RecommendedLocation() {
               direction="row"
               justifyContent="flex-end"
               sx={{
-                "& > :not(style)": { marginRight: 2 }
+                "& > :not(style)": {marginRight: 2}
               }}
             >
               <Button variant="contained" color="error" onClick={() => onReset()}>
