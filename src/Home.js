@@ -21,7 +21,8 @@ const BackgroundPage = styled("div")(() => ({
 const Paper = styled("div")(({theme}) => ({
   display: "flex",
   flexDirection: "column",
-  alignItems: "center"
+  alignItems: "center",
+  minHeight: `calc(100vh - 150px)`
 }));
 
 const TitleStyle = styled(Typography)(({theme}) => ({
@@ -42,8 +43,7 @@ const SectionStyle = styled(Link)(({theme}) => ({
 }));
 
 const Footer = styled("div")(({theme}) => ({
-  position: "absolute",
-  bottom: "20px",
+  padding: "1em 0",
   color: theme.palette.grey[600],
   justifyContent: "center",
   alignItems: "center",
@@ -52,11 +52,11 @@ const Footer = styled("div")(({theme}) => ({
 
 const BarChartWrapper = styled("div")(({theme}) => ({
   margin: theme.spacing(2, 5),
-  width: "45%",
+  width: "500px",
 }));
 
 const Wrapper = styled("div")(({theme}) => ({
-  display: "flex"
+  // display: "flex",
 }));
 
 export default function Home() {
@@ -98,21 +98,22 @@ export default function Home() {
             Recommended Location
           </SectionStyle>
         </MenuStyle>
-        <Footer>
-          <div>
-            <Github/> Team No_Error Frontend Demo <Bug/>
-          </div>
-          <div>Copyright © Made by Ziyao Cui, Xiaoxiao Duan, Jingyi Huang, Zipeng Liang</div>
-        </Footer>
+        <Wrapper>
+          <BarChartWrapper>
+            <BarChart BarChartData={BarChartData1}/>
+          </BarChartWrapper>
+          <BarChartWrapper>
+            <BarChart BarChartData={BarChartData2}/>
+          </BarChartWrapper>
+        </Wrapper>
       </Paper>
-      <Wrapper>
-        <BarChartWrapper>
-          <BarChart BarChartData={BarChartData1}/>
-        </BarChartWrapper>
-        <BarChartWrapper>
-          <BarChart BarChartData={BarChartData2}/>
-        </BarChartWrapper>
-      </Wrapper>
+
+      <Footer>
+        <div>
+          <Github/> Team No_Error Frontend Demo <Bug/>
+        </div>
+        <div>Copyright © Made by Ziyao Cui, Xiaoxiao Duan, Jingyi Huang, Zipeng Liang</div>
+      </Footer>
 
     </BackgroundPage>
   )

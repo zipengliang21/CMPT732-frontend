@@ -21,9 +21,10 @@ ChartJS.register(
 
 export default function BarChart(pros) {
   const barChartData= pros.BarChartData
-  console.log(barChartData)
+
   const options = {
     responsive: true,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         position: 'top',
