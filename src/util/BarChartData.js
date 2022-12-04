@@ -2,8 +2,8 @@ export const chartTitle = [
   "Star Rating Count", "Test"
 ]
 export const xValues = [
-  ["1 star", "2 stars", "3 stars", "4 stars", "5 stars"],
-  ["test1", "test2", "test3", "test4", "test5"]
+  ["1 star", "1.5 star", "2 stars", "2.5 star", "3 stars", "3.5 star", "4 stars", "4.5 star", "5 stars"],
+  ['Restaurants', 'Food', 'Nightlife', 'Shopping', 'Beauty & Spas',   'Local Services', 'Fashion', 'Active Life',  'Automotive', 'Health & Medical', 'Others']
 ]
 export const yValues = [
   [50, 120, 300, 580, 400],

@@ -16,6 +16,8 @@ import Button from "@mui/material/Button";
 import useMapData from "./hooks/useMapData";
 import L from "leaflet";
 import {Circle, LayerGroup, MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+import useBarChartData from "./hooks/useBarChartData";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 
 const BackgroundPage = styled("div")(() => ({
   backgroundImage: `url(https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg)`,
@@ -58,9 +60,14 @@ const Footer = styled("div")(({theme}) => ({
   textAlign: "center"
 }));
 
-const BarChartWrapper = styled("div")(({theme}) => ({
+const BarChartWrapper1 = styled("div")(({theme}) => ({
   margin: theme.spacing(2, 5),
   width: "500px",
+}));
+
+const BarChartWrapper2 = styled("div")(({theme}) => ({
+  margin: theme.spacing(2, 5),
+  width: "800px",
 }));
 
 const Wrapper = styled("div")(({theme}) => ({
@@ -93,30 +100,11 @@ const MapWrapper = styled("div")(({theme}) => ({
 }));
 
 export default function Home() {
-  const BarChartData1 = {
-    chartTitle: BarChartData.chartTitle[0],
-    xValues: BarChartData.xValues[0],
-    yValues: BarChartData.yValues[0],
-    dataSetLabels: BarChartData.dataSetLabels[0],
-    backgroundColor: BarChartData.backgroundColor[0]
-  }
+  const starRating = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+  const categoryType= ['Restaurants', 'Food', 'Nightlife', 'Shopping', 'Beauty & Spas',   'Local Services', 'Fashion', 'Active Life',  'Automotive', 'Health & Medical', 'Others']
 
-  const BarChartData2 = {
-    chartTitle: BarChartData.chartTitle[1],
-    xValues: BarChartData.xValues[1],
-    yValues: BarChartData.yValues[1],
-    dataSetLabels: BarChartData.dataSetLabels[1],
-    backgroundColor: BarChartData.backgroundColor[1]
-  }
-
-  const onReset = () => {
-    return undefined;
-  }
-
-  const starRating = [1, 2, 3, 4, 5]
-
-  const [category, setCategory] = useState("");
-  const {businessData, starLevel, setStarLevel} = useMapData();
+  const {businessData, starLevel, setStarLevel, category, setCategory} = useMapData();
+  const { groupByStarData, groupByCategoryData } = useBarChartData();
   const mapRef = useRef()
 
   const markerIcon = new L.Icon({
@@ -124,6 +112,26 @@ export default function Home() {
     iconSize: [25, 35],
     iconAnchor: [20, 40],
   })
+
+  const BarChartData1 = {
+    chartTitle: BarChartData.chartTitle[0],
+    xValues: BarChartData.xValues[0],
+    yValues: groupByStarData,
+    dataSetLabels: BarChartData.dataSetLabels[0],
+    backgroundColor: BarChartData.backgroundColor[0]
+  }
+
+  const BarChartData2 = {
+    chartTitle: BarChartData.chartTitle[1],
+    xValues: BarChartData.xValues[1],
+    yValues: groupByCategoryData,
+    dataSetLabels: BarChartData.dataSetLabels[1],
+    backgroundColor: BarChartData.backgroundColor[1]
+  }
+
+  const onReset = () => {
+    return undefined;
+  }
 
   const onApplyFilter = async e => {
     e.preventDefault();
@@ -145,20 +153,22 @@ export default function Home() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
+        <MarkerClusterGroup>
+          {businessData.map((business) => {
+            return <>
+              <Marker
+                position={{lat: business.latitude, lng: business.longitude}}
+                icon={markerIcon}>
+                <Popup>
+                  <b>Name: {business.name}</b> <br/>
+                  <b>Star: {business.stars}</b> <br/>
+                  <b>Review count: {business.review_count}</b>
+                </Popup>
+              </Marker>
+            </>
+          })}
+        </MarkerClusterGroup>
 
-        {businessData.map((business) => {
-          return <>
-            <Marker
-              position={{lat: business.latitude, lng: business.longitude}}
-              icon={markerIcon}>
-              <Popup>
-                <b>Name: {business.name}</b> <br/>
-                <b>Star: {business.stars}</b> <br/>
-                <b>Review count: {business.review_count}</b>
-              </Popup>
-            </Marker>
-          </>
-        })}
       </MapContainer>
 
     );
@@ -166,6 +176,10 @@ export default function Home() {
 
   const handleStarLevelChange = (e) => {
     setStarLevel(e.target.value);
+  }
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
   }
 
   return (
@@ -191,12 +205,12 @@ export default function Home() {
           </SectionStyle>
         </MenuStyle>
         <Wrapper>
-          <BarChartWrapper>
+          <BarChartWrapper1>
             <BarChart BarChartData={BarChartData1}/>
-          </BarChartWrapper>
-          <BarChartWrapper>
+          </BarChartWrapper1>
+          <BarChartWrapper2>
             <BarChart BarChartData={BarChartData2}/>
-          </BarChartWrapper>
+          </BarChartWrapper2>
         </Wrapper>
         <MapWrapper>
           <form onSubmit={onApplyFilter}>
@@ -212,12 +226,13 @@ export default function Home() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={1}
+                    value={category}
                     size="small"
+                    onChange={handleCategoryChange}
                   >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    {categoryType.map((category) => {
+                      return <MenuItem value={category}>{category}</MenuItem>
+                    })}
                   </Select>
                 </FormControl>
               </DropdownWrapper>

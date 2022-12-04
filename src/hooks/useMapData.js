@@ -6,6 +6,7 @@ export default function useMapData() {
   const [businessData, setBusinessData] = useState([]);
   const [neighborData, setNeighborData] = useState([]);
   const [starLevel, setStarLevel] = useState("");
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     async function initialSet() {
@@ -26,14 +27,21 @@ export default function useMapData() {
   }, []);
 
   useEffect( () => {
-    async function updateBusinessWithStarLevel() {
-      if(!starLevel) return;
-      const newBusinessData = await getBusinessDataWithStar(starLevel)
-      setBusinessData(newBusinessData)
+    async function updateBusinessWithStarLevelAndCategory() {
+      if (!starLevel && category) {
+        const newBusinessData = await getBusinessDataWithCategory(category)
+        setBusinessData(newBusinessData)
+      } else if (!category && starLevel) {
+        const newBusinessData = await getBusinessDataWithStar(starLevel)
+        setBusinessData(newBusinessData)
+      } else if (category && starLevel) {
+        const newBusinessData = await getBusinessDataWithStarAndCategory(starLevel, category)
+        setBusinessData(newBusinessData)
+      }
     }
 
-    updateBusinessWithStarLevel();
-  }, [starLevel])
+    updateBusinessWithStarLevelAndCategory();
+  }, [starLevel, category])
 
   const getAllBusinessData = async () => {
     const response = await axios.get(`/map`);
@@ -46,7 +54,17 @@ export default function useMapData() {
   };
 
   const getBusinessDataWithStar = async (value) => {
-    const response = await axios.get(`/map/${value}`);
+    const response = await axios.get(`/map/s/${value}`);
+    return response.data;
+  };
+
+  const getBusinessDataWithCategory = async (value) => {
+    const response = await axios.get(`/map/c/${value}`);
+    return response.data;
+  };
+
+  const getBusinessDataWithStarAndCategory = async (starLevel, category) => {
+    const response = await axios.get(`/map/sc/${starLevel}/${category}`);
     return response.data;
   };
 
@@ -56,8 +74,9 @@ export default function useMapData() {
     neighborData,
     setNeighborData,
     getAllBusinessData,
-    getBusinessDataWithStar,
     starLevel,
-    setStarLevel
+    setStarLevel,
+    category,
+    setCategory
   };
 }
