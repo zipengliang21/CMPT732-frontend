@@ -10,8 +10,8 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import useMapData from "./hooks/useMapData";
 import MarkerClusterGroup from "react-leaflet-markercluster";
+import useNeighborMapData from "./hooks/useNeighborMapData";
 
 const BackgroundPage = styled("div")(() => ({
   backgroundImage: `url(https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg)`,
@@ -55,7 +55,7 @@ const starRating = [1, 2, 3, 4, 5]
 
 export default function LocationRecommender() {
   const [category, setCategory] = useState("");
-  const {businessData, starLevel, setStarLevel, neighborData} = useMapData();
+  const { neighborData } = useNeighborMapData();
   const mapRef = useRef()
 
   const markerIcon = new L.Icon({
@@ -119,70 +119,70 @@ export default function LocationRecommender() {
     );
   }
 
-  const handleStarLevelChange = (e) => {
-    setStarLevel(e.target.value);
-  }
+  // const handleStarLevelChange = (e) => {
+  //   setStarLevel(e.target.value);
+  // }
 
   return (
     <BackgroundPage>
       <Paper>
-        <form onSubmit={onApplyFilter}>
-          <CustomTable>
-            <Typography variant="h4">
-              Choose values to filter data you want
-            </Typography>
-            <DropdownWrapper>
-              <FilterWrapper variant="h6">
-                Category
-              </FilterWrapper>
-              <FormControl fullWidth>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={1}
-                  size="small"
-                >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-              </FormControl>
-            </DropdownWrapper>
-            <DropdownWrapper>
-              <FilterWrapper variant="h6">
-                Star Rating
-              </FilterWrapper>
-              <FormControl fullWidth>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={starLevel}
-                  size="small"
-                  onChange={handleStarLevelChange}
-                >
-                  {starRating.map((starValue) => {
-                    return <MenuItem value={starValue}>{starValue}</MenuItem>
-                  })}
-                </Select>
-              </FormControl>
-            </DropdownWrapper>
-            <Grid
-              container
-              direction="row"
-              justifyContent="flex-end"
-              sx={{
-                "& > :not(style)": {marginRight: 2}
-              }}
-            >
-              <Button variant="contained" color="error" onClick={() => onReset()}>
-                Reset
-              </Button>
-              {/*<Button variant="contained" type="submit">*/}
-              {/*  Apply*/}
-              {/*</Button>*/}
-            </Grid>
-          </CustomTable>
-        </form>
+        {/*<form onSubmit={onApplyFilter}>*/}
+        {/*  <CustomTable>*/}
+        {/*    <Typography variant="h4">*/}
+        {/*      Choose values to filter data you want*/}
+        {/*    </Typography>*/}
+        {/*    <DropdownWrapper>*/}
+        {/*      <FilterWrapper variant="h6">*/}
+        {/*        Category*/}
+        {/*      </FilterWrapper>*/}
+        {/*      <FormControl fullWidth>*/}
+        {/*        <Select*/}
+        {/*          labelId="demo-simple-select-label"*/}
+        {/*          id="demo-simple-select"*/}
+        {/*          value={1}*/}
+        {/*          size="small"*/}
+        {/*        >*/}
+        {/*          <MenuItem value={10}>Ten</MenuItem>*/}
+        {/*          <MenuItem value={20}>Twenty</MenuItem>*/}
+        {/*          <MenuItem value={30}>Thirty</MenuItem>*/}
+        {/*        </Select>*/}
+        {/*      </FormControl>*/}
+        {/*    </DropdownWrapper>*/}
+        {/*    <DropdownWrapper>*/}
+        {/*      <FilterWrapper variant="h6">*/}
+        {/*        Star Rating*/}
+        {/*      </FilterWrapper>*/}
+        {/*      <FormControl fullWidth>*/}
+        {/*        <Select*/}
+        {/*          labelId="demo-simple-select-label"*/}
+        {/*          id="demo-simple-select"*/}
+        {/*          value={starLevel}*/}
+        {/*          size="small"*/}
+        {/*          onChange={handleStarLevelChange}*/}
+        {/*        >*/}
+        {/*          {starRating.map((starValue) => {*/}
+        {/*            return <MenuItem value={starValue}>{starValue}</MenuItem>*/}
+        {/*          })}*/}
+        {/*        </Select>*/}
+        {/*      </FormControl>*/}
+        {/*    </DropdownWrapper>*/}
+        {/*    <Grid*/}
+        {/*      container*/}
+        {/*      direction="row"*/}
+        {/*      justifyContent="flex-end"*/}
+        {/*      sx={{*/}
+        {/*        "& > :not(style)": {marginRight: 2}*/}
+        {/*      }}*/}
+        {/*    >*/}
+        {/*      <Button variant="contained" color="error" onClick={() => onReset()}>*/}
+        {/*        Reset*/}
+        {/*      </Button>*/}
+        {/*      /!*<Button variant="contained" type="submit">*!/*/}
+        {/*      /!*  Apply*!/*/}
+        {/*      /!*</Button>*!/*/}
+        {/*    </Grid>*/}
+        {/*  </CustomTable>*/}
+        {/*</form>*/}
         <Map/>
       </Paper>
     </BackgroundPage>
