@@ -53,9 +53,9 @@ const onReset = () => {
 
 const starRating = [1, 2, 3, 4, 5]
 
-export default function RecommendedLocation() {
+export default function LocationRecommender() {
   const [category, setCategory] = useState("");
-  const {businessData, starLevel, setStarLevel} = useMapData();
+  const {businessData, starLevel, setStarLevel, neighborData} = useMapData();
   const mapRef = useRef()
 
   const markerIcon = new L.Icon({
@@ -70,6 +70,7 @@ export default function RecommendedLocation() {
 
   const Map = () => {
     const position = useMemo(() => ({lat: 53.55, lng: -113.5}), [])
+    console.log(neighborData)
     return (
 
       <MapContainer
@@ -84,28 +85,35 @@ export default function RecommendedLocation() {
           url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
 
-        <MarkerClusterGroup>
-          {businessData.map((business) => {
-            return <Marker
+          {neighborData.map((business) => {
+            return <>
+              <Marker
                 position={{lat: business.latitude, lng: business.longitude}}
                 icon={markerIcon}>
                 <Popup>
                   <b>Name: {business.name}</b> <br/>
-                  <b>Star: {business.stars}</b> <br/>
-                  <b>Review count: {business.review_count}</b>
+                  <b>Longitude: {business.longitude}</b> <br/>
+                  <b>Latitude: {business.latitude}</b>
                 </Popup>
               </Marker>
+              <Marker
+                position={{lat: business.neighbor_latitude, lng: business.neighbor_longitude}}>
+                <Popup>
+                  <b>Target Store: {business.name}</b> <br/>
+                  <b>Neighbor Name: {business.neighbor_store}</b> <br/>
+                  <b>Neighbor Longitude: {business.neighbor_longitude}</b> <br/>
+                  <b>Neighbor Latitude: {business.neighbor_latitude}</b>
+                </Popup>
+              </Marker>
+              <LayerGroup>
+                <Circle
+                  center={[business.latitude, business.longitude]}
+                  pathOptions={{ color: 'blue', fillColor: 'blue' }}
+                  radius={500}
+                />
+              </LayerGroup>
+            </>
           })}
-        </MarkerClusterGroup>
-        {businessData.map((business) => {
-          return <LayerGroup>
-              <Circle
-                center={[business.latitude, business.longitude]}
-                pathOptions={{ color: 'blue', fillColor: 'blue' }}
-                radius={500}
-              />
-            </LayerGroup>
-        })}
       </MapContainer>
 
     );

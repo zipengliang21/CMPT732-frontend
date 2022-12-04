@@ -40,8 +40,8 @@ export default function Header() {
             <TitleStyle href="nlp" variant="h6" underline="none">
               NLP
             </TitleStyle>
-            <TitleStyle href="recommended_location" variant="h6" underline="none">
-              Recommended Location
+            <TitleStyle href="location_recommender" variant="h6" underline="none">
+              Location Recommender
             </TitleStyle>
           </MenuStyle>
         </ToolBarStyle>
