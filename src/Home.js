@@ -18,6 +18,10 @@ import L from "leaflet";
 import {Circle, LayerGroup, MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import useBarChartData from "./hooks/useBarChartData";
 import MarkerClusterGroup from "react-leaflet-markercluster";
+import "./leaflet.awesome-markers";
+import "./leaflet.awesome-markers.css"
+import { IonIcon } from "@ionic/react"
+import { bowlingBallOutline } from 'ionicons/icons';
 
 const BackgroundPage = styled("div")(() => ({
   backgroundImage: `url(https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg)`,
@@ -103,15 +107,9 @@ export default function Home() {
   const starRating = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
   const categoryType= ['Restaurants', 'Food', 'Nightlife', 'Shopping', 'Beauty & Spas',   'Local Services', 'Fashion', 'Active Life',  'Automotive', 'Health & Medical', 'Others']
 
-  const {businessData, starLevel, setStarLevel, category, setCategory} = useMapData();
+  const {businessData, setBusinessData, starLevel, setStarLevel, category, setCategory, getAllBusinessData} = useMapData();
   const { groupByStarData, groupByCategoryData } = useBarChartData();
   const mapRef = useRef()
-
-  const markerIcon = new L.Icon({
-    iconUrl: require("./resources/images/marker.png"),
-    iconSize: [25, 35],
-    iconAnchor: [20, 40],
-  })
 
   const BarChartData1 = {
     chartTitle: BarChartData.chartTitle[0],
@@ -129,8 +127,13 @@ export default function Home() {
     backgroundColor: BarChartData.backgroundColor[1]
   }
 
-  const onReset = () => {
-    return undefined;
+  const onReset = async () => {
+    if (starLevel !== "" || category !== "") {
+      setStarLevel("");
+      setCategory("");
+      const data = await getAllBusinessData()
+      setBusinessData(data)
+    }
   }
 
   const onApplyFilter = async e => {
@@ -139,7 +142,20 @@ export default function Home() {
 
   const Map = () => {
     const position = useMemo(() => ({lat: 53.55, lng: -113.5}), [])
-    console.log(businessData)
+
+    const color_by_category = {
+      "Restaurants": "darkblue", "Food": "cadetblue", "Nightlife": "black",
+      "Shopping": "darkpurple", "Beauty & Spas": "pink", "Local Services": "darktblue",
+      "Fashion": "darkpurple", "Active Life": "darkred",
+      "Automotive": "orange", "Health & Medical": "darkgreen", "Others": "gray"
+    };
+
+    const customize_icon = {
+      "Restaurants": "coffee", "Food": "glass", "Nightlife": "bookmark",
+      "Shopping": "star", "Beauty & Spas": "star", "Local Services": "flag",
+      "Fashion": "star", "Active Life": "bookmark",
+      "Automotive": "car", "Health & Medical": "flag", "Others": "tags"
+    };
     return (
 
       <MapContainer
@@ -155,16 +171,24 @@ export default function Home() {
         />
         <MarkerClusterGroup>
           {businessData.map((business) => {
+            const category = business["category"]
+            const customMarker = L.AwesomeMarkers.icon({
+              icon: customize_icon[category],
+              prefix: 'fa',
+              markerColor: color_by_category[category]
+            });
             return <>
               <Marker
                 position={{lat: business.latitude, lng: business.longitude}}
-                icon={markerIcon}>
+                icon={customMarker}
+                >
                 <Popup>
                   <b>Name: {business.name}</b> <br/>
                   <b>Star: {business.stars}</b> <br/>
                   <b>Review count: {business.review_count}</b>
                 </Popup>
               </Marker>
+
             </>
           })}
         </MarkerClusterGroup>
