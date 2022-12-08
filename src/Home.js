@@ -20,8 +20,6 @@ import useBarChartData from "./hooks/useBarChartData";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import "./leaflet.awesome-markers";
 import "./leaflet.awesome-markers.css"
-import { IonIcon } from "@ionic/react"
-import { bowlingBallOutline } from 'ionicons/icons';
 
 const BackgroundPage = styled("div")(() => ({
   backgroundImage: `url(https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg)`,

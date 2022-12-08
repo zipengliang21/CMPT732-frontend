@@ -4,7 +4,6 @@ import axios from "../util/axios";
 export default function useMapData() {
   // Create a custom React Hook
   const [businessData, setBusinessData] = useState([]);
-  const [neighborData, setNeighborData] = useState([]);
   const [starLevel, setStarLevel] = useState("");
   const [category, setCategory] = useState("");
 
@@ -12,15 +11,6 @@ export default function useMapData() {
     async function initialSet() {
       const initBusinessData = await getAllBusinessData();
       setBusinessData(initBusinessData);
-    }
-
-    initialSet();
-  }, []);
-
-  useEffect(() => {
-    async function initialSet() {
-      const initNeighborData = await getAllNeighborData();
-      setNeighborData(initNeighborData);
     }
 
     initialSet();
@@ -48,11 +38,6 @@ export default function useMapData() {
     return response.data;
   };
 
-  const getAllNeighborData = async () => {
-    const response = await axios.get(`/location`);
-    return response.data;
-  };
-
   const getBusinessDataWithStar = async (value) => {
     const response = await axios.get(`/map/s/${value}`);
     return response.data;
@@ -71,8 +56,6 @@ export default function useMapData() {
   return {
     businessData,
     setBusinessData,
-    neighborData,
-    setNeighborData,
     getAllBusinessData,
     starLevel,
     setStarLevel,

@@ -1,11 +1,14 @@
 import {
-  CssBaseline,
-  styled
+  styled, Typography
 } from "@mui/material";
-import {GoogleMap, useLoadScript, Marker} from "@react-google-maps/api"
-import {useMemo} from "react";
-import business from "./business.json"
+import React, {useMemo, useRef, useState} from "react";
 import BarChart from "./components/BarChart";
+import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-markercluster";
+import L from "leaflet";
+import useMapData from "./hooks/useMapData";
+import ReactWordcloud from "react-wordcloud";
+import useWordCloudData from "./hooks/useWordCloud";
 
 const BackgroundPage = styled("div")(() => ({
   backgroundImage: `url(https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg)`,
@@ -16,35 +19,168 @@ const BackgroundPage = styled("div")(() => ({
   minHeight: `calc(100vh - 70px)`
 }));
 
-const CustomGoogleMap = styled(GoogleMap)(({ theme }) => ({
+const Paper = styled("div")(({theme}) => ({
+  display: "flex",
+  textAlign: "center",
+  minHeight: `calc(100vh - 150px)`,
 }));
 
-const BarChartWrapper = styled(BarChart)(({ theme }) => ({
-  width: 300
+const InfoWrapper = styled("div")(({theme}) => ({
+  display: "flex",
+  textAlign: "center",
+  color: theme.palette.info.main,
 }));
 
-const Map = () => {
-  const center = useMemo(() => ({lat: 53.55, lng: -113.5}), [])
-  console.log(business.data)
+const MapWrapper = styled("div")(({theme}) => ({
+  margin: theme.spacing(4,2),
+}));
 
-  return <GoogleMap zoom={10} center={center} mapContainerClassName="map-container">
-    {business.data.map((business) => {
-      return <Marker position={{lat: business.latitude, lng:business.longitude}}/>
-    })}
-  </GoogleMap>
-}
+const WordCloudWrapper = styled("div")(({theme}) => ({
+  margin: theme.spacing(4,4),
+  color: theme.palette.info.main,
+}));
 
-export default function NLP() {
-  const {isLoaded} = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
-  })
+const HolderWrapper = styled("div")(() => ({
+  width: "500px",
+  height: "500px"
+}));
 
-  if (!isLoaded) return <div>Loading...</div>
+const NLP= () => {
+  const [words, setWords] = useState("");
+  const {positiveData, setPositiveData, negativeData, setNegativeData, getPositiveData, getNegativeData} = useWordCloudData();
 
+  const [goodWordCloud, setGoodWordCloud] = useState(null);
+  const [badWordCloud, setBadWordCloud] = useState(null);
+
+  const [name, setName] = useState("N/A");
+  const [stars, setStars] = useState("N/A");
+  const [reviewCount, setReviewCount] = useState("N/A");
+  const Map = () => {
+    const {businessData} = useMapData();
+    const position = useMemo(() => ({lat: 53.55, lng: -113.5}), [])
+
+    const color_by_category = {
+      "Restaurants": "darkblue", "Food": "cadetblue", "Nightlife": "black",
+      "Shopping": "darkpurple", "Beauty & Spas": "pink", "Local Services": "darktblue",
+      "Fashion": "darkpurple", "Active Life": "darkred",
+      "Automotive": "orange", "Health & Medical": "darkgreen", "Others": "gray"
+    };
+
+    const customize_icon = {
+      "Restaurants": "coffee", "Food": "glass", "Nightlife": "bookmark",
+      "Shopping": "star", "Beauty & Spas": "star", "Local Services": "flag",
+      "Fashion": "star", "Active Life": "bookmark",
+      "Automotive": "car", "Health & Medical": "flag", "Others": "tags"
+    };
+
+    const onClick = async (name, stars, review_count, id) => {
+      const positiveLog = await getPositiveData(id)
+      const negativeLog = await getNegativeData(id)
+
+      const processData = (dirtyData) => {
+        const data = []
+        dirtyData.forEach((row) => {
+          const split = row.split(" ");
+          const word = split.slice(0, split.length - 1).join(" ")
+          const appearance = split[split.length - 1];
+          const record = {}
+          record["text"] = word;
+          record["value"] = appearance;
+          data.push(record)
+        })
+        return data
+      }
+
+      if (positiveLog) {
+        setPositiveData(processData(positiveLog));
+        setGoodWordCloud(SimpleWordCloud(positiveData));
+      } else {
+        setGoodWordCloud(null);
+      }
+
+      if (negativeLog) {
+        setNegativeData(processData(negativeLog));
+        setBadWordCloud(SimpleWordCloud(negativeData));
+      } else {
+        setBadWordCloud(null);
+      }
+
+      setName(name)
+      setStars(stars)
+      setReviewCount(review_count)
+    }
+
+    return (
+      <>
+        <InfoWrapper>
+          <Typography variant="h5">Business Name: {name}</Typography> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <Typography variant="h5">Star: {stars}</Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <Typography variant="h5">Review count: {reviewCount}</Typography>
+        </InfoWrapper>
+        <MapContainer
+          doubleClickZoom={false}
+          center={position}
+          zoom={11}
+          maxZoom={18}>
+
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+          />
+          <MarkerClusterGroup>
+            {businessData.map((business, id) => {
+              const category = business["category"]
+              const customMarker = L.AwesomeMarkers.icon({
+                icon: customize_icon[category],
+                prefix: 'fa',
+                markerColor: color_by_category[category]
+              });
+              return <Marker
+                  position={{lat: business.latitude, lng: business.longitude}}
+                  key={id}
+                  icon={customMarker}
+                  eventHandlers={{ click: () => onClick(business["name"], business["stars"], business["review_count"], business["business_id"]) }}
+                >
+                </Marker>
+            })}
+          </MarkerClusterGroup>
+
+        </MapContainer>
+      </>
+    );
+  }
+
+  const SimpleWordCloud= (words) => {
+    const options = {
+      rotations: 5,
+      rotationAngles: [-90, 0],
+    };
+    const size = [500, 500];
+    return <ReactWordcloud
+      words={words}
+      options={options}
+      size={size}
+    />
+  }
   return (
     <BackgroundPage>
-      <CssBaseline/>
-      NLP
+      <Paper>
+        <MapWrapper>
+          <Map/>
+        </MapWrapper>
+        <WordCloudWrapper>
+          <div>
+            <Typography variant="h4">Word Cloud for User's Good Review</Typography>
+            {goodWordCloud !== null ? goodWordCloud : <HolderWrapper>N/A</HolderWrapper>}
+          </div>
+          <div>
+            <Typography variant="h4">Word Cloud for User's Bad Review</Typography>
+            {badWordCloud !== null ? badWordCloud : <HolderWrapper>N/A</HolderWrapper>}
+          </div>
+        </WordCloudWrapper>
+      </Paper>
     </BackgroundPage>
   )
 }
+
+export default NLP;
