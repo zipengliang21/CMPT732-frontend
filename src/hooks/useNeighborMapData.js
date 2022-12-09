@@ -19,8 +19,15 @@ export default function useNeighborMapData() {
     return response.data;
   };
 
+  const getTargetStoreNeighborData = async (id) => {
+    const response = await axios.get(`/targetStore/${id}`);
+    console.log(response.data)
+    return response.data;
+  };
+
   return {
     neighborData,
     setNeighborData,
+    getTargetStoreNeighborData
   };
 }
