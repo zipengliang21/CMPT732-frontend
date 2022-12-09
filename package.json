@@ -1,6 +1,5 @@
 {
   "name": "cmpt732-frontend",
-  "homepage": "https://zipengliang21.github.io/CMPT732-frontend-website",
   "version": "0.1.0",
   "engines": {
     "node": "14.17.6"

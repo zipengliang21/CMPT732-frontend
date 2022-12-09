@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://cmpt732-backend.herokuapp.com",
   withCredentials: false,
   headers: {
     "Access-Control-Allow-Origin": "*",
