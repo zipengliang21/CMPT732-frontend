@@ -73,7 +73,7 @@ export default function LocationRecommender() {
       <MapContainer
         doubleClickZoom={false}
         center={position}
-        zoom={12}
+        zoom={11}
         maxZoom={18}>
 
         <TileLayer
