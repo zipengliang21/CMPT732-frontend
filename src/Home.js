@@ -3,7 +3,7 @@ import {
   styled,
   Typography
 } from "@mui/material";
-import React, {useMemo, useRef, useState} from "react";
+import React, {useMemo, useRef} from "react";
 import Bug from "./components/Bug";
 import Github from "./components/Github";
 import BarChart from "./components/BarChart";
@@ -15,7 +15,7 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import useMapData from "./hooks/useMapData";
 import L from "leaflet";
-import {Circle, LayerGroup, MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import useBarChartData from "./hooks/useBarChartData";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import "./leaflet.awesome-markers";
@@ -107,7 +107,6 @@ export default function Home() {
 
   const {businessData, setBusinessData, starLevel, setStarLevel, category, setCategory, getAllBusinessData} = useMapData();
   const { groupByStarData, groupByCategoryData } = useBarChartData();
-  const mapRef = useRef()
 
   const BarChartData1 = {
     chartTitle: BarChartData.chartTitle[0],
@@ -155,20 +154,18 @@ export default function Home() {
       "Automotive": "car", "Health & Medical": "flag", "Others": "tags"
     };
     return (
-
       <MapContainer
         doubleClickZoom={false}
         center={position}
         zoom={11}
-        maxZoom={18}
-        ref={mapRef}>
+        maxZoom={18}>
 
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
         <MarkerClusterGroup>
-          {businessData.map((business) => {
+          {businessData.map((business, index) => {
             const category = business["category"]
             const customMarker = L.AwesomeMarkers.icon({
               icon: customize_icon[category],
@@ -179,6 +176,7 @@ export default function Home() {
               <Marker
                 position={{lat: business.latitude, lng: business.longitude}}
                 icon={customMarker}
+                key={index}
                 >
                 <Popup>
                   <b>Name: {business.name}</b> <br/>
@@ -186,7 +184,6 @@ export default function Home() {
                   <b>Review count: {business.review_count}</b>
                 </Popup>
               </Marker>
-
             </>
           })}
         </MarkerClusterGroup>
@@ -252,8 +249,8 @@ export default function Home() {
                     size="small"
                     onChange={handleCategoryChange}
                   >
-                    {categoryType.map((category) => {
-                      return <MenuItem value={category}>{category}</MenuItem>
+                    {categoryType.map((category, index) => {
+                      return <MenuItem key={index} value={category}>{category}</MenuItem>
                     })}
                   </Select>
                 </FormControl>
@@ -270,8 +267,8 @@ export default function Home() {
                     size="small"
                     onChange={handleStarLevelChange}
                   >
-                    {starRating.map((starValue) => {
-                      return <MenuItem value={starValue}>{starValue}</MenuItem>
+                    {starRating.map((starValue, index) => {
+                      return <MenuItem key={index} value={starValue}>{starValue}</MenuItem>
                     })}
                   </Select>
                 </FormControl>
@@ -287,9 +284,6 @@ export default function Home() {
                 <Button variant="contained" color="error" onClick={() => onReset()}>
                   Reset
                 </Button>
-                {/*<Button variant="contained" type="submit">*/}
-                {/*  Apply*/}
-                {/*</Button>*/}
               </Grid>
             </CustomTable>
           </form>

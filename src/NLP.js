@@ -1,9 +1,8 @@
 import {
   styled, Typography
 } from "@mui/material";
-import React, {useMemo, useRef, useState} from "react";
-import BarChart from "./components/BarChart";
-import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+import React, {useMemo, useState} from "react";
+import {MapContainer, Marker, TileLayer} from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import L from "leaflet";
 import useMapData from "./hooks/useMapData";
@@ -46,7 +45,6 @@ const HolderWrapper = styled("div")(() => ({
 }));
 
 const NLP= () => {
-  const [words, setWords] = useState("");
   const {positiveData, setPositiveData, negativeData, setNegativeData, getPositiveData, getNegativeData} = useWordCloudData();
 
   const [goodWordCloud, setGoodWordCloud] = useState(null);
